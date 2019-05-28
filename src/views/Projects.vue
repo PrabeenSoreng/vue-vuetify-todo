@@ -18,6 +18,8 @@
 </template>
 
 <script>
+import db from "@/firebase";
+
 export default {
   data() {
     return {
@@ -56,6 +58,20 @@ export default {
         }
       ]
     };
+  },
+  created() {
+    db.collection("projects").onSnapshot(res => {
+      const changes = res.docChanges();
+      console.log(changes);
+      changes.forEach(change => {
+        if (change.type === "added") {
+          this.projects.push({
+            ...change.doc.data(),
+            id: change.doc.id
+          });
+        }
+      });
+    });
   },
   computed: {
     myProjects() {
